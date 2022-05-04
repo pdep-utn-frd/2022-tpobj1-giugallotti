@@ -141,6 +141,10 @@ object dino {
 	method estaVivo() {
 		return vivo
 	}
+	
+	method comer(){
+		game.removeVisual(ave)
+	}
 }
 
 object ave {
@@ -163,8 +167,9 @@ object ave {
 	}
 	
 	method chocar(){
-		juego.terminar()
+		dino.comer()
 	}
+	
     method detener(){
 		game.removeTickEvent("moverAve")
 	}
