@@ -12,10 +12,13 @@ object juego{
 		game.addVisual(cactus)
 		game.addVisual(dino)
 		game.addVisual(reloj)
+		game.addVisual(ave)
 	
 		keyboard.space().onPressDo{ self.jugar()}
 		
 		game.onCollideDo(dino,{ obstaculo => obstaculo.chocar()})
+		
+		game.onTick(1500,"movimiento",{ave.movete()})
 		
 	} 
 	
@@ -23,6 +26,7 @@ object juego{
 		dino.iniciar()
 		reloj.iniciar()
 		cactus.iniciar()
+		ave.iniciar()
 	}
 	
 	method jugar(){
@@ -40,6 +44,7 @@ object juego{
 		cactus.detener()
 		reloj.detener()
 		dino.morir()
+		ave.detener()
 	}
 	
 }
@@ -135,5 +140,38 @@ object dino {
 	}
 	method estaVivo() {
 		return vivo
+	}
+}
+
+object ave {
+	 
+	const posicionInicial = game.at(game.width()-1,suelo.position().y())
+	var position = posicionInicial
+
+	method image() = "polluelo.png"
+	method position() = position
+	
+	method iniciar(){
+		position = posicionInicial
+		game.onTick(velocidad,"moverAve",{self.mover()})
+	}
+	
+	method mover(){
+		position = position.left(1)
+		if (position.x() == -1)
+			position = posicionInicial
+	}
+	
+	method chocar(){
+		juego.terminar()
+	}
+    method detener(){
+		game.removeTickEvent("moverAve")
+	}
+	
+	method movete(){
+		const x=(0..game.width()-1).anyOne()
+		const y=(0..game.height()-1).anyOne()
+		position=game.at(x,y)
 	}
 }
