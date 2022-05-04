@@ -7,6 +7,7 @@ object juego{
 	method configurar(){
 		game.width(12)
 		game.height(8)
+		game.boardGround("fondo.jpg")
 		game.title("Dino Game")
 		game.addVisual(suelo)
 		game.addVisual(cactus)
@@ -18,7 +19,7 @@ object juego{
 		
 		game.onCollideDo(dino,{ obstaculo => obstaculo.chocar()})
 		
-		game.onTick(1500,"movimiento",{ave.movete()})
+		game.onTick(1000,"movimiento",{ave.movete()})
 		
 	} 
 	
@@ -36,7 +37,6 @@ object juego{
 			game.removeVisual(gameOver)
 			self.iniciar()
 		}
-		
 	}
 	
 	method terminar(){
@@ -44,7 +44,7 @@ object juego{
 		cactus.detener()
 		reloj.detener()
 		dino.morir()
-		ave.detener()
+		ave.morir()
 	}
 	
 }
@@ -68,7 +68,7 @@ object reloj {
 	}
 	method iniciar(){
 		tiempo = 0
-		game.onTick(100,"tiempo",{self.pasarTiempo()})
+		game.onTick(1000,"tiempo",{self.pasarTiempo()})
 	}
 	method detener(){
 		game.removeTickEvent("tiempo")
@@ -114,7 +114,7 @@ object dino {
 	var vivo = true
 	var position = game.at(1,suelo.position().y())
 	
-	method image() = "dino.png"
+	method image() = "dinosaurio.png"
 	method position() = position
 	
 	method saltar(){
@@ -138,19 +138,21 @@ object dino {
 	method iniciar() {
 		vivo = true
 	}
-	method estaVivo() {
+	method estaVivo(){
 		return vivo
 	}
 	
 	method comer(){
 		game.removeVisual(ave)
+		game.say(self,"¡Que rico!")
+		ave.morir()
 	}
 }
 
 object ave {
-	 
 	const posicionInicial = game.at(game.width()-1,suelo.position().y())
 	var position = posicionInicial
+	var viva=true
 
 	method image() = "polluelo.png"
 	method position() = position
@@ -158,6 +160,12 @@ object ave {
 	method iniciar(){
 		position = posicionInicial
 		game.onTick(velocidad,"moverAve",{self.mover()})
+		viva=true
+		game.addVisual(ave)
+	}
+
+	method chocar(){
+		dino.comer()
 	}
 	
 	method mover(){
@@ -166,8 +174,12 @@ object ave {
 			position = posicionInicial
 	}
 	
-	method chocar(){
-		dino.comer()
+	method morir(){
+		viva=false
+	}
+	
+	method estaViva(){
+		return viva
 	}
 	
     method detener(){
@@ -179,4 +191,5 @@ object ave {
 		const y=(0..game.height()-1).anyOne()
 		position=game.at(x,y)
 	}
+	
 }
